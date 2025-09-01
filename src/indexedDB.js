@@ -223,6 +223,44 @@ export const DBService = (props, context) => {
         });
       },
 
+      updateExperienceEntry: async (id, experienceEntry) => {
+        return openDB().then(db => {
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction(EXPERIENCE_ENTRY_STORE, 'readwrite');
+            const store = tx.objectStore(EXPERIENCE_ENTRY_STORE);
+
+            const req = store.get(id);
+
+            req.onsuccess = (event) => {
+              const existingRecord = event.target.result;
+
+              if (existingRecord) {
+              // Modify the existing record with new data
+              Object.assign(existingRecord, experienceEntry);
+
+              const putRequest = store.put(existingRecord);
+
+              putRequest.onsuccess = () => {
+                console.log(`Record with ID ${id} updated successfully.`);
+                resolve(true)
+              };
+
+              putRequest.onerror = (event) => {
+                console.error(`Error updating record with ID ${id}:`, event.target.error);
+                reject(error)
+              };
+            } else {
+              console.warn(`Record with ID ${id} not found.`);
+              reject(`Record with ID ${id} not found.`)
+            }
+            
+            
+            }
+            req.onerror = e => reject(e.target.error);
+          });
+        });
+      },
+
       deleteExperienceEntry: async (id) => {
         return openDB().then(db => {
           return new Promise((resolve, reject) => {

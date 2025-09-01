@@ -77,6 +77,20 @@ export default function ExperienceLedgerEntries(props, ctx) {
       })
   }
 
+  function handleUpdateExperienceEntry(formData) {
+    const id = formData.id
+    db.updateExperienceEntry(id, formData)
+      .then(result => {
+         const character = getState('selectedCharacterName')
+          db.getExperienceEntries(character)
+            .then(data => {
+              setState('currentEditId', -1)
+              setState('experienceEntryForm.showForm', false)
+              setState('selectedCharacterExperienceEntries', data)
+            })
+      })
+  }
+
   function editExpEntry(event, id) {
     console.log('edit request for :  ', id)
     console.log('edit request target.parentElement.parentElement.parentElement :  ', event.target.parentElement.parentElement.parentElement)
@@ -262,7 +276,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           class: 'border p-1 rounded w-32 mr-2',
                           type: 'date',
                           id: "effectiveDateInput",
-                          tabIndex: 0,
+                          //tabIndex: 0,
                           oninput: e => setState('addExperienceEntryForm', { ...(getState("addExperienceEntryForm")), effective_date: e.target.value })
                         }
                       },
@@ -274,7 +288,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           id: "experienceInput",
                           min: "-10000",
                           max: "10000",
-                          tabIndex: 1,
+                          //tabIndex: 1,
                           oninput: e => setState('addExperienceEntryForm', { ...(getState("addExperienceEntryForm")), experience: e.target.value })
                         }
                       },
@@ -285,7 +299,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           placeholder: 'Category  (16 char max)',
                           id: "categoryInput",
                           maxLength: "16",
-                          tabIndex: 2,
+                          //tabIndex: 2,
                           oninput: e => setState('addExperienceEntryForm', { ...(getState("addExperienceEntryForm")), category: e.target.value })
                         }
                       },
@@ -294,7 +308,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           class: 'bg-blue-600 text-white px-3 py-1 rounded ml-36',
                           type: 'submit',
                           text: 'Save',
-                          tabIndex: 4
+                          //tabIndex: 4
                         }
                       },
                       {
@@ -303,7 +317,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           type: 'button',
                           onclick: () => setState('experienceEntryForm.showForm', false),
                           text: 'Cancel',
-                          tabIndex: 5
+                          //tabIndex: 5
                         }
                       },
 
@@ -317,7 +331,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           placeholder: 'Description (128 char max)',
                           id: "descriptionInput",
                           maxLength: "128",
-                          tabIndex: 3,
+                          //tabIndex: 3,
                           oninput: e => setState('addExperienceEntryForm', { ...(getState("addExperienceEntryForm")), description: e.target.value })
                         }
                       },
@@ -338,8 +352,9 @@ export default function ExperienceLedgerEntries(props, ctx) {
                               type: 'date',
                               id: "effectiveDateInput",
                               value: editForm.effective_date,
-                              tabIndex: 0,
-                              oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), effective_date: e.target.value })
+                              //tabIndex: 0,
+                              oninput: e => editForm.effective_date =e.target.value
+                              // oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), effective_date: e.target.value })
                             }
                           },
                           {
@@ -351,8 +366,10 @@ export default function ExperienceLedgerEntries(props, ctx) {
                               placeholder: 'XP',
                               id: "experienceInput",
                               value: editForm.experience,
-                              tabIndex: 1,
-                              oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), experience: e.target.value })
+                              //tabIndex: 1,
+                              
+                              oninput: e => editForm.experience =e.target.value
+                              //oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), experience: e.target.value })
                             }
                           },
                           {
@@ -363,8 +380,9 @@ export default function ExperienceLedgerEntries(props, ctx) {
                               id: "categoryInput",
                               value: editForm.category,
                               maxLength: "16",
-                              tabIndex: 2,
-                              oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), category: e.target.value })
+                              //tabIndex: 2,
+                              oninput: e => editForm.category =e.target.value
+                              //oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), category: e.target.value })
                             }
                           },
                           ,
@@ -373,7 +391,13 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           class: 'bg-blue-600 text-white px-3 py-1 rounded ml-36',
                           // type: 'submit',
                           text: 'Save',
-                          tabIndex: 4
+                          //tabIndex: 4,
+                          onclick: () => {
+                           const stateEditForm =getState("editExperienceEntryForm") 
+                            
+                            Object.assign(stateEditForm, editForm)
+                            handleUpdateExperienceEntry(getState("editExperienceEntryForm"))
+                          }
                         }
                       },
                       {
@@ -385,7 +409,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                             setState('experienceEntryForm.showForm', false)
                           },
                           text: 'Cancel',
-                          tabIndex: 5
+                          //tabIndex: 5
                         }
                       },
 
@@ -400,8 +424,9 @@ export default function ExperienceLedgerEntries(props, ctx) {
                           id: "descriptionInput",
                           value: editForm.description,
                           maxLength: "128",
-                          tabIndex: 3,
-                          oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), description: e.target.value })
+                          //tabIndex: 3,
+                          oninput: e => editForm.description =e.target.value
+                          // oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), description: e.target.value })
                         }
                       },
                       addExperienceEntryError && { div: { class: 'text-red-600 mt-2', text: addExperienceEntryError } }
