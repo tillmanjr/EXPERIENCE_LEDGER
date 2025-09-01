@@ -179,10 +179,15 @@ export const DBService = (props, context) => {
               const data = req.result.filter(e => e.character === characterName) 
               // setState('selectedCharacterExperienceEntries', data);
               const total = data.reduce( (prev, curr) => {
-                return prev + curr.experience
+                const currExp = curr.experience
+                const expInt = typeof(currExp) === 'string'
+                  ? parseInt(currExp)
+                  : currExp
+                return prev + currExp
               }, 0)
-              const result = data.toSorted( (a,b) => new Date(b.effective_date) - new Date(a.effective_date))
+              
               setState('selectedCharacterExperienceTotal', total)
+              const result = data.toSorted( (a,b) => new Date(b.effective_date) - new Date(a.effective_date))
               resolve(result)
             };
             req.onerror = e => {
@@ -235,6 +240,10 @@ export const DBService = (props, context) => {
               const existingRecord = event.target.result;
 
               if (existingRecord) {
+
+                if (typeof(experienceEntry.experience) === 'string') {
+                  experienceEntry.experience = parseInt(experienceEntry.experience)
+                }
               // Modify the existing record with new data
               Object.assign(existingRecord, experienceEntry);
 
