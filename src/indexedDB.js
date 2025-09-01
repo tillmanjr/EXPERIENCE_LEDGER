@@ -222,6 +222,24 @@ export const DBService = (props, context) => {
           });
         });
       },
+
+      deleteExperienceEntry: async (id) => {
+        return openDB().then(db => {
+          return new Promise((resolve, reject) => {
+            const tx = db.transaction(EXPERIENCE_ENTRY_STORE, 'readwrite');
+            const store = tx.objectStore(EXPERIENCE_ENTRY_STORE);
+
+            const req = store.delete(id);
+            req.onsuccess = () => {
+              console.log(`Experience entry deleted: ${id}`)
+              resolve(true)
+            };
+            req.onerror = e => {
+              console.error(`Error deleting experience entry: ${id}, ${e.target.error}`)
+              reject(e.target.error)};
+          });
+        });
+      },
       
       refreshData: () => {
         // Refresh all data sources

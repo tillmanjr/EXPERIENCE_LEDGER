@@ -80,6 +80,56 @@ function App(props, ctx) {
                 onclick: (e) => handleHide(e)
               }
             },
+            
+              {
+                dialog: {
+                    id: "confirmationDialog",
+                    class: "p-6 bg-white rounded-lg shadow-lg",
+                    children: [
+                      {
+                        h2: {
+                          class: "text-xl font-semibold mb-4",
+                          text: "Confirm Delete"
+                        }
+                      },
+                      {
+                        p: {
+                          class: "mb-6",
+                          text: 'Are you sure you want to proceed with this deletion?'
+                        }
+                      },
+                      {
+                        div: {
+                          class: "flex justify-end space-x-4",
+                          children: [
+                            {
+                              button: {
+                                id:"cancelButton",
+                                class:"px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300",
+                                text: "Cancel"
+                              }
+                            },
+                      
+                            {
+                              button: {
+                                id:"confirmButton",
+                                class:"px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600",
+                                text: "Confirm"
+                              }
+
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  div: {
+                    id:"backdrop",
+                    class:"fixed inset-0 bg-black bg-opacity-50 hidden"
+                  }
+                },
             {
               div: {
                 className: "text-center",
@@ -199,6 +249,7 @@ const juris = new Juris({
       description: '',
       effective_date: ''
     },
+    currentEditId: -1,
     experienceTotals: null,
     selectedCharacterTreasureEntries: [],
     dbReady: false

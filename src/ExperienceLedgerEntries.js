@@ -8,11 +8,16 @@ export default function ExperienceLedgerEntries(props, ctx) {
   } = ctx
 
   const db = DBService;
+  const openConfirmationDialog = props.openConfirmationDialog
   
   // if (!name) {
   //   return ''
   // }
   
+
+
+
+
 
   // State
   // const character = () => getState('selectedCharacterName')
@@ -61,6 +66,15 @@ export default function ExperienceLedgerEntries(props, ctx) {
       db.getExperienceEntries(character)
         .then( data => setState('selectedCharacterExperienceEntries', data))
     }).catch(err => setState('addExperienceEntryError', 'Failed to save experience entry.'));
+  }
+
+  function deleteExperienceEntry(id) {
+    db.deleteExperienceEntry(id)
+      .then( _ => {
+        const character = getState('selectedCharacterName')
+        db.getExperienceEntries(character)
+          .then(data => setState('selectedCharacterExperienceEntries', data))
+      })
   }
 
   function editExpEntry(event, id) {
@@ -178,7 +192,13 @@ export default function ExperienceLedgerEntries(props, ctx) {
                                               {
                                                 button: {
                                                   class: 'bg-white-600 border border-red-700 text-red-700 px-2 py-1 rounded',
-                                                  text: 'Delete'
+                                                  text: 'Delete',
+                                                  onclick: (event) => {
+                                                    openConfirmationDialog(
+                                                      deleteExperienceEntry,
+                                                      e.id
+                                                    )
+                                                  }
                                                 }
                                               },
                                             ]
