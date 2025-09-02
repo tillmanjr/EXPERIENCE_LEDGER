@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=1000, initial-scale=1.0" />
+		<meta name="description" content="Experience Ledger - juris.js SPA" />
+		<meta name="theme-color" content="#2563eb" />
+		<title>Experience Ledger</title>
+		<!-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> -->
+		<link href="/src/output.css" rel="stylesheet">
+
+	</head>
+	<!-- <body className="bg-gray-800 min-h-[800px] min-w-[800px] m-0 p-0"> -->
+		
+		<!-- <div id="app" className="w-full h-full"></div> -->
+	<body >
+		<div id="app"></div>
+			<!-- Load juris.js from CDN before app.js -->
+				<script>
+					// Dynamically load juris.js and attach to window only after it is loaded
+					const script = document.createElement('script');
+					script.src = 'https://jurisjs.com/juris.js';
+					script.onload = function() {
+						if (!window.Juris) {
+							throw new Error('Juris.js library did not load correctly.');
+						}
+						// Now load the app
+						const appScript = document.createElement('script');
+						appScript.type = 'module';
+						appScript.src = '/src/app.stable.js';
+						document.body.appendChild(appScript);
+					};
+					document.head.appendChild(script);
+				</script>
+	</body>
+</html>

@@ -4,17 +4,6 @@ import LedgerComponent from './LedgerComponent.js'
 import LedgerHeader from './LedgerHeader.js'
 import ExperienceLedgerEntries from './ExperienceLedgerEntries.js'
 
-import  {
-  Modal,
-  RouteSelectionRow,
-  RouteSelectionTable,
-  ColumnResizer,
-  RouteTableCell,
-  RouteTableHeaderCell,
-  RouteTable,
-  handleConfirmInsert
-} from './VirtScrollTable.js'
-
 
 // import dataArray from './randomData.js'
 
@@ -42,6 +31,98 @@ function AppButton(props, ctx) {
           className: 'max-w-16 max-h-16 mx-0 my-0 bg-gray-100 rounded shadow absolute top-4 left-4 p-2',
           text: () => 'Show',
           onclick: (e) => {setState('collapseToButton', false)}
+        }
+      })
+    }
+
+}
+
+function limitedCurrencyQueue(concurrency) {
+  const queue = [];
+  let activeCount = 0;
+
+  return function (fn, ...args) {
+    return new Promise((resolve, reject) => {
+      const task = () => {
+        activeCount++;
+        fn(...args).then(
+          (value) => {
+            resolve(value);
+            next();
+          },
+          (error) => {
+            reject(error);
+            next();
+          }
+        );
+      };
+
+      const next = () => {
+        activeCount--;
+        if (queue.length > 0 && activeCount < concurrency) {
+          const nextTask = queue.shift();
+          nextTask();
+        }
+      };
+
+      if (activeCount < concurrency) {
+        task();
+      } else {
+        queue.push(task);
+      }
+    });
+  };
+}
+
+
+
+function AppRunner(props, ctx) {
+  const { getState, setState, headless, components } = ctx
+  const db = headless.DBService
+
+//   function asyncOperation(item) {
+//   return new Promise((resolve) => {
+//     db.addExperienceEntry(item)
+//       .then( _ => {
+//          setState('completed', getState('completed') + 1)
+//         resolve(true)}
+//       )
+//     })    
+// }
+
+
+// const maxConcurrency = 12;
+// const queue = limitedCurrencyQueue(maxConcurrency)
+
+// const importRandomGens = () => {
+//   dataArray.forEach( item => {
+//     const newItem = {
+//       character:  'Kael Bloodraven',
+//       effective_date: item.effective_date,
+//       experience: item.experience,
+//       category: item.category,
+//       description: item.description
+//     }
+//     queue(asyncOperation, newItem)
+//   })
+// }
+
+// const go = async() => importRandomGens()
+
+// go()
+
+return {
+      render: () => ({
+        div: {
+          className: 'min-w-175 mx-auto p-6 bg-white rounded shadow',
+          children: [
+            {
+              span: {
+                className: 'max-w-16 max-h-16 mx-0 my-0 bg-gray-100 rounded shadow p-2',
+                text: () => getState('completed'),
+              }
+            },
+          ]
         }
       })
     }
@@ -219,13 +300,7 @@ const juris = new Juris({
     LedgerComponent,
     LedgerHeader,
     ExperienceLedgerEntries,
-    RouteTable,
-    RouteSelectionTable,
-    RouteSelectionRow,
-    RouteTableCell,
-    RouteTableHeaderCell,
-    ColumnResizer,
-    Modal
+
   },
   layout: {
     div: {
@@ -279,44 +354,11 @@ const juris = new Juris({
     currentEditId: -1,
     experienceTotals: null,
     selectedCharacterTreasureEntries: [],
-    dbReady: false,
-  
+    dbReady: false
+  },
 
 
-    ui: {
-      routTable: {
-        scrollTop: 0,
-        adjusting: false,
-        adjustingColumn: null,
-        adjustingColumnInitial: 100,
-        lastMouseX: 0,
-        userSelect: 'none',
-        showResizers: true,
-        startRange: 0,
-        selectedRows: [],
-        lastSelectedRow: null,
-        columnWidths: {
-            id: 24,
-            effective_date: 128,
-            experience: 64,
-            category: 192,
-            description: 668
-        }
-      },
-      routeModal: {
-        scrollTop: 0,
-        selectedRows: [],
-        lastSelectedRow: null,
-        isCtrlPressed: false,
-        hoveredRow: null,
-        keyListenersSetup: false
-      },
-      modal: {
-        isOpen: false,
-        type: null
-      }
-    }
-  }
+
 });
 
 window.juris = juris;

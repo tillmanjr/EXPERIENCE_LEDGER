@@ -15,6 +15,7 @@ export default function LedgerHeader(props, ctx) {
     db.getExperienceEntries(value).then( data => {
       setState('selectedCharacterExperienceEntries', data);
       setState('selectedCharacterName', value)
+      // setState(('tableData', data))
     })
   }
 

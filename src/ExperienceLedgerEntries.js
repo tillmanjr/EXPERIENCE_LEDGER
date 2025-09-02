@@ -9,15 +9,6 @@ export default function ExperienceLedgerEntries(props, ctx) {
 
   const db = DBService;
   const openConfirmationDialog = props.openConfirmationDialog
-  
-  // if (!name) {
-  //   return ''
-  // }
-  
-
-
-
-
 
   // State
   // const character = () => getState('selectedCharacterName')
@@ -381,7 +372,7 @@ export default function ExperienceLedgerEntries(props, ctx) {
                               value: editForm.category,
                               maxLength: "16",
                               //tabIndex: 2,
-                              oninput: e => editForm.category =e.target.value
+                              oninput: e => editForm.category = e.target.value
                               //oninput: e => setState('editExperienceEntryForm', { ...(getState("editExperienceEntryForm")), category: e.target.value })
                             }
                           },

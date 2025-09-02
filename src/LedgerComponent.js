@@ -2,6 +2,7 @@ export default function LedgerComponent(props, ctx) {
   const { getState, setState, headless, components } = ctx
   const db = headless.DBService
 
+
   console.log('app getCharacters', getState('characters', []))
 
   const currentCharacterName = () => getState('selectedCharacterName')
@@ -59,43 +60,58 @@ function closeConfirmationDialog() {
   backdrop.classList.add('hidden');
 }
 
-// Event listeners for buttons
+/* ========================================================
+  begin scrollable table stuff
+*/
 
+const generateRows = (history) => {
+    return history.map( item => {
+        return {
+            tr: {
+                className: 'h-[20px]',
+                children: [
+                    {
+                        td: {
+                            className: 'w-[100px] text-left align-top pr-1 pl-[14px]',         
+                            text: () => item.effective_date
+                        }
+                    },
+                    {
+                        td: {
+                            className: 'w-[50px] text-left align-top pl-3', 
+                            text: () => item.experience.toString()
+                        }
+                    },
+                    {
+                        td: {
+                            className: 'w-[192px] text-left align-top pl-2', 
+                            text: () => item.category
+                        }
+                    },
+                    {
+                        td: {
+                            className: 'w-[550px] text-left align-top pl-4', 
+                            text: () => item.description
+                        }
+                    },
+                    {
+                        td: {
+                            className: 'hidden',
+                            text: () => item.id.toString()
+                        }
+                    }
+                ]
+            }
+        } 
+    }) 
+}
 
-
-  // const experienceEntries = getState(expEntriesStateKey)
-
-
-  // // State
-  // const ledgers = () => getState('ledgers', []);
-  // const newName = () => getState('newCharacterName', '');
-  // const error = () => getState('ledgerError', '');
-  // const selected = () => getState('selectedLedger', null);
-
-  // // Always reload ledgers from IndexedDB when not viewing a selected ledger
-  // const dbReady = getState('dbReady', false);
-  // if (!dbReady) {
-  //   db.openDB().then(() => {
-  //     setState('dbReady', true);
-  //     db.getLedgers().then(dbLedgers => {
-  //       setState('ledgers', dbLedgers);
-  //     });
-  //   });
-  // } else if (!selected) {
-  //   db.getLedgers().then(dbLedgers => {
-  //     // Only update if changed to avoid infinite rerender
-  //     const prev = getState('ledgers', []);
-  //     if (JSON.stringify(prev) !== JSON.stringify(dbLedgers)) {
-  //       setState('ledgers', dbLedgers);
-  //     }
-  //   });
-  // }
-
+/* ======================================================== */
   return {
     render: () => (
       {
         div: {
-          class: 'mt-2 min-w-178 max-w-178 m-x-2',
+          class: 'mt-2 min-w-250 max-w-250 m-x-2',
           children: () => {
             return [
               {
@@ -108,16 +124,83 @@ function closeConfirmationDialog() {
               },
             
               {
-                div: {
-                  class: 'mb-4 min-w-177 max-w-177',
-                  children: [
-                    { ExperienceLedgerEntries: { 
-                        selectedCharacterName: () => getState('selectedCharacterName'),
-                        openConfirmationDialog: openConfirmationDialog
-                      }
+
+                 div: {
+                        className: 'ml-4 w-[1000px] h-[600px] tableParent table_height',
+                        children: [
+                            {
+                                table: {
+                                    className: 'scrollable scrollableTable w-[980px] max-h-[556px]  border-1 border-spacing-[2px] border-gray-500 border-solid border-collapse-separate',
+                                    children: [
+                                        {
+                                            thead: {
+                                                className: 'border-collapse border-spacing-0 border-1 border-[#b3b3b3] border-solid rounded-tl-md rounded-tr-md w-[412px]',
+                                                children: [
+                                                    {
+                                                        th: {
+                                                            class: 'w-[100px] text-left',
+                                                            id: 'first-col',
+                                                            text: 'Effective Date'
+                                                        }
+                                                    },
+                                                    {
+                                                        th: {
+                                                            class: 'w-[50px] text-left pl-2',
+                                                            id: 'second-col',
+                                                            text: 'Exp.'
+                                                        }
+                                                    },
+                                                    {
+                                                        th: {
+                                                            class: 'w-[192px] text-left pl-2',
+                                                            id: 'third-col',
+                                                            text: 'Category'
+                                                        }
+                                                    },,
+                                                    {
+                                                        th: {
+                                                            class: 'w-[550px] text-left pl-5',
+                                                            id: 'third-col',
+                                                            text: 'Description'
+                                                        }
+                                                    },
+                                                    {
+                                                        th: {
+                                                            class: 'w-[20px]',
+                                                            id: 'hidden-col'
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            tbody: {
+                                                id:'mtbody',
+                                                className: 'overflow-y-scroll overflow-x-hidden w-[410px] pt-1 border-spacing-0 border-1 border-[#b3b3b3] border-t-0 border-solid rounded-bl-md rounded-br-md',
+                                                 
+                                                // setState('selectedCharacterName', value)
+                                                children: () => generateRows(getState('selectedCharacterExperienceEntries'))
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
                     }
-                  ]
-                }
+
+                // div: {
+                //   class: 'mb-4 min-w-177 max-w-177',
+                //   children: [
+                //     { ExperienceLedgerEntries: { 
+                //         selectedCharacterName: () => getState('selectedCharacterName'),
+                //         openConfirmationDialog: openConfirmationDialog
+                //       }
+                //     },
+                //     {
+                      
+                //     }
+                //   ]
+                // }
               }
               
               ]
@@ -126,47 +209,4 @@ function closeConfirmationDialog() {
       }
     )
   }
-  //  if (!selected) {
-  //   return {
-  //   render: () => ( {
-  //     div: {
-  //       class: 'mt-6',
-  //       children: [
-  //         {
-  //           div: {
-  //             class: 'mb-4',
-  //             children: [
-  //               { div: { class: 'font-semibold mb-2', text: 'Select Character Ledger' } },
-  //               {
-  //                 select: {
-  //                   class: 'w-full mb-2 p-2 border rounded',
-  //                   onchange: e => setState('selectedLedger', e.target.value),
-  //                   children: [
-  //                     {
-  //                       option: {
-  //                         value: '',
-  //                         disabled: true,
-  //                         selected: true,
-  //                         text: 'Choose a character...'
-  //                       }
-  //                     },
-  //                     ...ledgers.map(l => (
-  //                       {
-  //                         option: { 
-  //                           value: l.character_name,
-  //                           text: l.character_name
-  //                         }
-  //                       }
-  //                     ))
-  //                   ]
-  //                 }
-  //               }
-  //             ]
-  //           }
-  //         }
-  //       ]
-  //     }
-  //   })
-  //  }
-  // }
 }
