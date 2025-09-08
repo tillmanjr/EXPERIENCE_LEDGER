@@ -6,11 +6,11 @@ export const ExperienceTableCell = (props, context) => {
   const title = () => props.hidden
     ? ''
     : props.value
-  
+
   const text = () => props.hidden
     ? ''
     : props.value !== undefined && props.value !== null ? String(props.value) : ''
-  
+
   return {
     div: {
       class: 'table-cell',
@@ -37,52 +37,54 @@ export const ExperienceTableCell = (props, context) => {
 };
 
 
-        export const ExperienceTableHeaderCell = (props, context) => {
-            const { getState } = context;
-            const onClickHandler = props.doOnClick;
-            
-            return {
-                div: {
-                    class: 'header-cell',
-                    style: () => ({
-                        width: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
-                        minWidth: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
-                        maxWidth: `${getState(`ui.expLedgerTable
+export const ExperienceTableHeaderCell = (props, context) => {
+  const { getState } = context;
+  const onClickHandler = props.doOnClick;
+
+  return {
+    div: {
+      class: 'header-cell',
+      style: () => ({
+        width: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+        minWidth: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+        maxWidth: `${getState(`ui.expLedgerTable
                           .columnWidths.${props.columnName}`, 100)}px`,
-                        height: '48px',
-                          position: 'relative'
-                    }),
-                    children: () => {
-                      if (props.hidden) {
-                        return [
-                          { ColumnResizer: { columnName: props.columnName } }
-                        ]
-                      } else {
-                        if (isDefined(onClickHandler)) {
-                          return [
-                            { span: { 
-                                class: 'cursor-pointer',  
-                                text: props.label,
-                                onclick: onClickHandler 
-                              }
-                            },
-                            { ColumnResizer: { columnName: props.columnName } }
-                          ]
-                        } else {
-                          return [
-                            { span: {
-                              text: props.label
-                              }
-                            },
-                            { ColumnResizer: { columnName: props.columnName } }
-                          ]
-                        }
-                        
-                      }
-                    }
+        height: '48px',
+        position: 'relative'
+      }),
+      children: () => {
+        if (props.hidden) {
+          return [
+            { ColumnResizer: { columnName: props.columnName } }
+          ]
+        } else {
+          if (isDefined(onClickHandler)) {
+            return [
+              {
+                span: {
+                  class: 'cursor-pointer',
+                  text: props.label,
+                  onclick: onClickHandler
                 }
+              },
+              { ColumnResizer: { columnName: props.columnName } }
+            ]
+          } else {
+            return [
+              {
+                span: {
+                  text: props.label
+                }
+              },
+              { ColumnResizer: { columnName: props.columnName } }
+            ]
           }
+
         }
+      }
+    }
+  }
+}
 
 // Container component for the scrollable table
 export const ExperienceTableComponent = (props, context) => {
@@ -109,11 +111,11 @@ export const ExperienceTableComponent = (props, context) => {
     setState('sortExperienceByDateDesc', !getState('sortExperienceByDateDesc'))
     const setDesc = getState('sortExperienceByDateDesc')
 
-    setState('selectedCharacterExperienceEntries', 
-      getState('selectedCharacterExperienceEntries').toSorted( (a,b) => setDesc
-                ? new Date(b.effective_date) - new Date(a.effective_date)
-                : new Date(a.effective_date) - new Date(b.effective_date)
-    ))
+    setState('selectedCharacterExperienceEntries',
+      getState('selectedCharacterExperienceEntries').toSorted((a, b) => setDesc
+        ? new Date(b.effective_date) - new Date(a.effective_date)
+        : new Date(a.effective_date) - new Date(b.effective_date)
+      ))
   }
 
   return {
@@ -139,7 +141,7 @@ export const ExperienceTableComponent = (props, context) => {
                       class: 'header-row',
                       children: [
                         { ExperienceTableHeaderCell: { label: 'ID', columnName: 'id', hidden: true, 'doOnClick': null } },
-//                        { ExperienceTableHeaderCell: { label: 'Character', columnName: 'character', hidden: false, 'doOnClick': null } },
+                        //                        { ExperienceTableHeaderCell: { label: 'Character', columnName: 'character', hidden: false, 'doOnClick': null } },
                         { ExperienceTableHeaderCell: { label: 'Effective Date', columnName: 'effective_date', hidden: false, 'doOnClick': toggleSortByDateOrder } },
                         { ExperienceTableHeaderCell: { label: 'Experience', columnName: 'experience', hidden: false, 'doOnClick': null } },
                         { ExperienceTableHeaderCell: { label: 'Category', columnName: 'category', hidden: false, 'doOnClick': null } },
@@ -184,9 +186,23 @@ export const ExperienceTableComponent = (props, context) => {
                           if (!row) continue;
 
                           let className = 'table-row';
+                          const rowData = {
+                            id: row.id,
+                            character: row.character,
+                            effective_data: row.effective_date,
+                            experience: row.experience,
+                            category: row.category,
+                            description: row.description
+                          }
                           visibleData.push({
                             div: {
                               class: className,
+                              'data-id': row.id,
+                              'data-character': row.character,
+                              'data-effective_data': row.effective_date,
+                              'data-experience': row.experience,
+                              'data-category': row.category,
+                              'data-description': row.description,
                               key: `row-${i}`,
                               style: {
                                 top: `${i * ROW_HEIGHT}px`,
@@ -196,7 +212,7 @@ export const ExperienceTableComponent = (props, context) => {
 
                               children: [
                                 { ExperienceTableCell: { columnName: 'id', value: row.id, hidden: true } },
-//                                { ExperienceTableCell: { columnName: 'character', value: row.character, hidden: false } },
+                                //                                { ExperienceTableCell: { columnName: 'character', value: row.character, hidden: false } },
                                 { ExperienceTableCell: { columnName: 'effective_date', value: row.effective_date, hidden: false } },
                                 { ExperienceTableCell: { columnName: 'experience', value: row.experience, hidden: false } },
                                 { ExperienceTableCell: { columnName: 'category', value: row.category, hidden: false } },

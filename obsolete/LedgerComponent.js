@@ -116,19 +116,19 @@ const generateRows = (history) => {
           class: 'mt-2 min-w-250 max-w-250 m-x-2',
           children: () => {
             return [
-              {
-                div: {
-                  class: 'mb-4 min-w-177',
-                  children: [
-                    { LedgerHeader: {} }
-                  ]
-                }
-              },
+              // {
+              //   div: {
+              //     class: 'mb-4 min-w-177',
+              //     children: [
+              //       { LedgerHeader: {} }
+              //     ]
+              //   }
+              // },
             
               {
 
                  div: {
-                        className: 'ml-4 w-[1000px] h-[600px] tableParent table_height',
+                        className: 'ml-4 w-[1000px] h-[600px] tableParent table_height ledger-tab-component-content',
                         children: [
                           {
                             ExperienceTableComponent: {}
