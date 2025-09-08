@@ -1,134 +1,222 @@
-        // Container component for the scrollable table
-        const ExperienceTableComponent = (props, context) => {
-            const { getState, setState } = context;
-            
-            const handleConfirmInsert = () => {
-                const selectedRouteRows = getState('ui.routeModal.selectedRows', []);
-                const routeData = getState('routeData', []);
-                const mainSelectedRows = getState('ui.routTable.selectedRows', []);
-                const mainData = getState('tableData', []);
-                
-                if (selectedRouteRows.length === 0 || mainSelectedRows.length === 0) {
-                    alert('Please select rows in both tables');
-                    return;
-                }
-                
-                // Convert selected route data to main table format
-                const routesToInsert = selectedRouteRows.map(index => {
-                    const routeRow = routeData[index];
-                    return {
-                        id: 0, // Will be reassigned
-                        character: routeRow.character,
-                        effective_date: routeRow.effective_date,
-                        experience: routeRow.experience,
-                        category: routeRow.category,
-                        description: routeRow.description,
-                        isNew: false,
-                        insertedFromRoute: true, // NEW: Mark as inserted from route
-                        markedForDelete: false
-                    };
-                });
-                
-                // Insert after the last selected row in main table
-                const insertPosition = Math.max(...mainSelectedRows) + 1;
-                const newData = [...mainData];
-                newData.splice(insertPosition, 0, ...routesToInsert);
-                
-                // Reassign IDs
-                for (let i = 0; i < newData.length; i++) {
-                    newData[i].id = i + 1;
-                }
-                
-                setState('tableData', newData);
-                
-                // Select the newly inserted rows
-                const newSelectedRows = [];
-                for (let i = insertPosition; i < insertPosition + routesToInsert.length; i++) {
-                    newSelectedRows.push(i);
-                }
-                setState('ui.routTable.selectedRows', newSelectedRows);
-                setState('ui.routTable.lastSelectedRow', insertPosition + routesToInsert.length - 1);
-                
-                // Close modal and reset state
-                setState('ui.modal.isOpen', false);
-                setState('ui.modal.type', null);
-                setState('ui.routeModal.selectedRows', []);
-                setState('ui.routeModal.lastSelectedRow', null);
-                setState('ui.routeModal.isCtrlPressed', false);
-                setState('ui.routeModal.hoveredRow', null);
-                setState('ui.routeModal.keyListenersSetup', false);
-            };
-            
-            const handleCancelInsert = () => {
-                setState('ui.modal.isOpen', false);
-                setState('ui.modal.type', null);
-                setState('ui.routeModal.selectedRows', []);
-                setState('ui.routeModal.lastSelectedRow', null);
-                setState('ui.routeModal.isCtrlPressed', false);
-                setState('ui.routeModal.hoveredRow', null);
-                setState('ui.routeModal.keyListenersSetup', false);
-            };
+const isDefined = (value) => (value !== undefined && value !== null)
+
+export const ExperienceTableCell = (props, context) => {
+  const { getState, setState } = context;
+
+  const title = () => props.hidden
+    ? ''
+    : props.value
+  
+  const text = () => props.hidden
+    ? ''
+    : props.value !== undefined && props.value !== null ? String(props.value) : ''
+  
+  return {
+    div: {
+      class: 'table-cell',
+      style: () => ({
+        width: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+        minWidth: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+        maxWidth: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+        userSelect: getState('ui.expLedgerTable.userSelect', 'none')
+      }),
+      ondoubleclick: (e) => {
+        setState('ui.expLedgerTable.userSelect', 'auto');
+        const range = document.createRange();
+        range.selectNodeContents(e.target);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+      },
+      onclick: () => {
+        setState('ui.expLedgerTable.userSelect', 'none');
+      },
+      title: title,
+      text: text
+    }
+  };
+};
+
+
+        export const ExperienceTableHeaderCell = (props, context) => {
+            const { getState } = context;
+            const onClickHandler = props.doOnClick;
             
             return {
                 div: {
-                    children: [
-                        { RouteTable: {} },
-                        () => {
-                            const isModalOpen = getState('ui.modal.isOpen', false);
-                            const modalType = getState('ui.modal.type', null);
-                            
-                            if (isModalOpen && modalType === 'routeSelection') {
-                                return {
-                                    Modal: {
-                                        title: 'Select Experience from Haf Rargetesk',
-                                        children: [
-                                            { RouteSelectionTable: {} }
-                                        ],
-                                        footer: [
-                                            {
-                                                div: {
-                                                    class: 'modal-selection-info',
-                                                    text: () => {
-                                                        const count = getState('ui.routeModal.selectedRows', []).length;
-                                                        return count > 0 ? `${count} experiences ${count > 1 ? 's' : ''} selected` : 'No experience selected';
-                                                    }
-                                                }
-                                            },
-                                            {
-                                                div: {
-                                                    class: 'modal-actions',
-                                                    children: [
-                                                        {
-                                                            button: {
-                                                                class: 'modal-btn cancel',
-                                                                text: 'Cancel',
-                                                                onclick: handleCancelInsert
-                                                            }
-                                                        },
-                                                        {
-                                                            button: {
-                                                                class: () => {
-                                                                    const count = getState('ui.routeModal.selectedRows', []).length;
-                                                                    return count > 0 ? 'modal-btn confirm' : 'modal-btn confirm';
-                                                                },
-                                                                disabled: () => getState('ui.routeModal.selectedRows', []).length === 0,
-                                                                text: () => {
-                                                                    const count = getState('ui.routeModal.selectedRows', []).length;
-                                                                    return count > 0 ? `Insert ${count} Operation${count > 1 ? 's' : ''}` : 'Insert Operations';
-                                                                },
-                                                                onclick: handleConfirmInsert
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                };
-                            }
-                            return null;
+                    class: 'header-cell',
+                    style: () => ({
+                        width: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+                        minWidth: `${getState(`ui.expLedgerTable.columnWidths.${props.columnName}`, 100)}px`,
+                        maxWidth: `${getState(`ui.expLedgerTable
+                          .columnWidths.${props.columnName}`, 100)}px`,
+                        height: '48px',
+                          position: 'relative'
+                    }),
+                    children: () => {
+                      if (props.hidden) {
+                        return [
+                          { ColumnResizer: { columnName: props.columnName } }
+                        ]
+                      } else {
+                        if (isDefined(onClickHandler)) {
+                          return [
+                            { span: { 
+                                class: 'cursor-pointer',  
+                                text: props.label,
+                                onclick: onClickHandler 
+                              }
+                            },
+                            { ColumnResizer: { columnName: props.columnName } }
+                          ]
+                        } else {
+                          return [
+                            { span: {
+                              text: props.label
+                              }
+                            },
+                            { ColumnResizer: { columnName: props.columnName } }
+                          ]
                         }
-                    ]
+                        
+                      }
+                    }
                 }
-            };
-        };
+          }
+        }
+
+// Container component for the scrollable table
+export const ExperienceTableComponent = (props, context) => {
+  const {
+    getState,
+    setState
+  } = context
+  const ROW_HEIGHT = 48;
+  const BUFFER_SIZE = 5;
+  const CONTAINER_HEIGHT = 556;
+
+  const calculateVisibleRange = () => {
+    const scrollTop = getState('ui.expLedgerTable.scrollTop', 0);
+    const data = getState('selectedCharacterExperienceEntries', [], false); // Don't track for range calculation
+    const start = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_SIZE);
+    const end = Math.min(
+      data.length,
+      Math.ceil((scrollTop + CONTAINER_HEIGHT) / ROW_HEIGHT) + BUFFER_SIZE
+    );
+    return { start, end };
+  };
+
+  const toggleSortByDateOrder = () => {
+    setState('sortExperienceByDateDesc', !getState('sortExperienceByDateDesc'))
+    const setDesc = getState('sortExperienceByDateDesc')
+
+    setState('selectedCharacterExperienceEntries', 
+      getState('selectedCharacterExperienceEntries').toSorted( (a,b) => setDesc
+                ? new Date(b.effective_date) - new Date(a.effective_date)
+                : new Date(a.effective_date) - new Date(b.effective_date)
+    ))
+  }
+
+  return {
+    render: () => (
+      {
+        div: {
+          class: 'table-container modal-table-container',
+          children: [
+            // Stats Panel - Only selection count is reactive
+            {
+              div: {
+                class: 'block',
+                text: "table_controls"
+              }
+            },
+            // Table Header - Static, no reactivity needed
+            {
+              div: {
+                class: 'table-header',
+                children: [
+                  {
+                    div: {
+                      class: 'header-row',
+                      children: [
+                        { ExperienceTableHeaderCell: { label: 'ID', columnName: 'id', hidden: true, 'doOnClick': null } },
+//                        { ExperienceTableHeaderCell: { label: 'Character', columnName: 'character', hidden: false, 'doOnClick': null } },
+                        { ExperienceTableHeaderCell: { label: 'Effective Date', columnName: 'effective_date', hidden: false, 'doOnClick': toggleSortByDateOrder } },
+                        { ExperienceTableHeaderCell: { label: 'Experience', columnName: 'experience', hidden: false, 'doOnClick': null } },
+                        { ExperienceTableHeaderCell: { label: 'Category', columnName: 'category', hidden: false, 'doOnClick': null } },
+                        { ExperienceTableHeaderCell: { label: 'Description', columnName: 'description', hidden: false, 'doOnClick': null } }
+                      ]
+                    }
+                  }
+                ]
+              },
+            },
+            {
+              div: {
+                class: 'table-scroll-container',
+                onscroll: (e) => {
+                  setState('ui.expLedgerTable.scrollTop', e.target.scrollTop);
+                },
+                children: [
+                  // Virtual Spacer - Only reactive to data length changes
+                  {
+                    div: {
+                      class: 'virtual-spacer',
+                      style: () => ({
+                        height: `${getState('selectedCharacterExperienceEntries', []).length * ROW_HEIGHT}px`
+                      })
+                    }
+                  },
+
+                  // Virtual Content - Only re-renders on scroll, not selection
+                  {
+                    div: {
+                      class: 'virtual-content',
+                      children: () => {
+                        const range = calculateVisibleRange();
+
+                        const data = getState('selectedCharacterExperienceEntries', []);
+
+                        const visibleData = [];
+
+                        // Create individual row components that handle their own selection state
+                        for (let i = range.start; i < range.end; i++) {
+                          const row = data[i];
+                          if (!row) continue;
+
+                          let className = 'table-row';
+                          visibleData.push({
+                            div: {
+                              class: className,
+                              key: `row-${i}`,
+                              style: {
+                                top: `${i * ROW_HEIGHT}px`,
+                                height: `${ROW_HEIGHT}px`,
+                                userSelect: 'none'
+                              },
+
+                              children: [
+                                { ExperienceTableCell: { columnName: 'id', value: row.id, hidden: true } },
+//                                { ExperienceTableCell: { columnName: 'character', value: row.character, hidden: false } },
+                                { ExperienceTableCell: { columnName: 'effective_date', value: row.effective_date, hidden: false } },
+                                { ExperienceTableCell: { columnName: 'experience', value: row.experience, hidden: false } },
+                                { ExperienceTableCell: { columnName: 'category', value: row.category, hidden: false } },
+                                { ExperienceTableCell: { columnName: 'description', value: row.description, hidden: false } }
+                              ]
+                            }
+                          })
+                        }
+
+                        return visibleData;
+                      }
+                    }
+                  }
+
+                ]
+              }
+            }
+          ]
+        }
+      }
+    )
+  }
+}

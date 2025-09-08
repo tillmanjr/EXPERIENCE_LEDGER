@@ -132,6 +132,7 @@
             background: #fafafa;
             font-weight: 600;
             position: relative;
+            height: 48px;
         }
         
         .table-cell {
@@ -149,12 +150,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            font-weight: 600;
+            font-weight: 800;
             background: #fafafa;
             font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             color: #666;
+            height: 44px;
         }
         
         .column-resizer {
@@ -517,7 +519,7 @@
 						// Now load the app
 						const appScript = document.createElement('script');
 						appScript.type = 'module';
-						appScript.src = '/src/app.stable.js';
+						appScript.src = '/src/app.js';
 						document.body.appendChild(appScript);
 					};
 					document.head.appendChild(script);

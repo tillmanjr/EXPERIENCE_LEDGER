@@ -2,18 +2,23 @@
 import { DBService } from './indexedDB.js';
 import LedgerComponent from './LedgerComponent.js'
 import LedgerHeader from './LedgerHeader.js'
-import ExperienceLedgerEntries from './ExperienceLedgerEntries.js'
+import ExperienceLedgerEntries from '../obsolete/ExperienceLedgerEntries.js'
+import {
+  ExperienceTableComponent,
+  ExperienceTableCell,
+  ExperienceTableHeaderCell
+ } from './ExperienceTableComponent.js'
 
-import  {
-  Modal,
-  RouteSelectionRow,
-  RouteSelectionTable,
-  ColumnResizer,
-  RouteTableCell,
-  RouteTableHeaderCell,
-  RouteTable,
-  handleConfirmInsert
-} from './VirtScrollTable.js'
+// import  {
+//   Modal,
+//   RouteSelectionRow,
+//   RouteSelectionTable,
+//   ColumnResizer,
+//   RouteTableCell,
+//   RouteTableHeaderCell,
+//   RouteTable,
+//   handleConfirmInsert
+// } from './VirtScrollTable.js'
 
 
 // import dataArray from './randomData.js'
@@ -65,29 +70,7 @@ function App(props, ctx) {
   const currentCharacterName = () => getState('selectedCharacterName', 'unknownSelectedCharacterName')
 
   const currentCharacterExp = () => getState('selectedCharacterExperienceTotal', 0)
-  
 
-
-
-
-
-  
-
-  // const collapseToButton = () => getState('collapseToButton', false)
-
- 
-  // if (collapseToButton() == true ) {
-  //   return {
-  //     render: () => ({
-  //       div: {
-  //         className: 'max-w-16 max-h-16 mx-auto bg-gray-100 rounded shadow',
-          
-  //           text: () => 'help'
-          
-  //       }
-  //     })
-  //   }
-  // } else {
     return {
       render: () => ({
         div: {
@@ -199,9 +182,6 @@ function App(props, ctx) {
   }
 }
 
-
-
-
 // Ensure Juris is available on window (assumes juris.js is loaded globally in index.html)
 const Juris = window.Juris;
 if (!Juris) {
@@ -218,14 +198,9 @@ const juris = new Juris({
     App,
     LedgerComponent,
     LedgerHeader,
-    ExperienceLedgerEntries,
-    RouteTable,
-    RouteSelectionTable,
-    RouteSelectionRow,
-    RouteTableCell,
-    RouteTableHeaderCell,
-    ColumnResizer,
-    Modal
+    ExperienceTableComponent,
+    ExperienceTableCell,
+    ExperienceTableHeaderCell
   },
   layout: {
     div: {
@@ -255,6 +230,7 @@ const juris = new Juris({
     selectedCharacterExperienceStateKey: '',
     selectedCharacterExperienceEntries: [],
     selectedCharacterExperienceTotal: 0,
+    sortExperienceByDateDesc: true,
     // showExperienceEntryForm: false,
     experienceEntryForm: {
       showForm: false,
@@ -284,7 +260,7 @@ const juris = new Juris({
 
 
     ui: {
-      routTable: {
+      expLedgerTable: {
         scrollTop: 0,
         adjusting: false,
         adjustingColumn: null,
@@ -296,20 +272,13 @@ const juris = new Juris({
         selectedRows: [],
         lastSelectedRow: null,
         columnWidths: {
-            id: 24,
+            id: 48,
+            character: 156,
             effective_date: 128,
             experience: 64,
-            category: 192,
+            category: 164,
             description: 668
         }
-      },
-      routeModal: {
-        scrollTop: 0,
-        selectedRows: [],
-        lastSelectedRow: null,
-        isCtrlPressed: false,
-        hoveredRow: null,
-        keyListenersSetup: false
       },
       modal: {
         isOpen: false,

@@ -187,7 +187,11 @@ export const DBService = (props, context) => {
               }, 0)
               
               setState('selectedCharacterExperienceTotal', total)
-              const result = data.toSorted( (a,b) => new Date(b.effective_date) - new Date(a.effective_date))
+              const setDesc = () => getState("sortExperienceByDateDesc", false)
+              const result = data.toSorted( (a,b) => setDesc
+                ? new Date(b.effective_date) - new Date(a.effective_date)
+                : new Date(a.effective_date) - new Date(b.effective_date)
+              )
               resolve(result)
             };
             req.onerror = e => {

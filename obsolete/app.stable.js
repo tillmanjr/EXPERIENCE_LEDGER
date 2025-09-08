@@ -1,7 +1,7 @@
 // Import our database service
-import { DBService } from './indexedDB.js';
-import LedgerComponent from './LedgerComponent.js'
-import LedgerHeader from './LedgerHeader.js'
+import { DBService } from '../src/indexedDB.js';
+import LedgerComponent from '../src/LedgerComponent.js'
+import LedgerHeader from '../src/LedgerHeader.js'
 import ExperienceLedgerEntries from './ExperienceLedgerEntries.js'
 
 
@@ -300,6 +300,7 @@ const juris = new Juris({
     LedgerComponent,
     LedgerHeader,
     ExperienceLedgerEntries,
+    
 
   },
   layout: {
